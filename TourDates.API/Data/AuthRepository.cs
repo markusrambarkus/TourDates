@@ -1,21 +1,38 @@
 using System;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using TourDates.API.Models;
 
 namespace TourDates.API.Data
 {
     public class AuthRepository : IAuthRepository
     {
+        /// The data context
         private readonly DataContext _context;
+
+        /// The default constructor
         public AuthRepository(DataContext context)
         {
             _context = context;
         }
 
-        public Task<User> Login(string username, string password)
+        public async Task<User> LoginAsync(string username, string password)
         {
-            throw new System.NotImplementedException();
+            var user = await _context.Users.FirstOrDefaultAsync(x => string.Equals(x.Username, username, StringComparison.OrdinalIgnoreCase));
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+            {
+                return null;
+            }
+
+            return user;
         }
 
         public async Task<User> RegisterAsync(User user, string password)
@@ -31,9 +48,10 @@ namespace TourDates.API.Data
 
             return user;
         }
-        public Task<bool> UserExists(string username)
+
+        public async Task<bool> UserExistsAsync(string username)
         {
-            throw new System.NotImplementedException();
+            return await _context.Users.AnyAsync(x => string.Equals(x.Username, username, StringComparison.OrdinalIgnoreCase));
         }
 
         #region Private Methods
@@ -46,6 +64,16 @@ namespace TourDates.API.Data
 
                 passwordSalt = hmac.Key;
                 passwordHash = hmac.ComputeHash(passwordBytes);
+            }
+        }
+
+        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        {
+            using(var hmac = new HMACSHA512(passwordSalt))
+            {
+                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+
+                return passwordHash.SequenceEqual(computedHash);
             }
         }
 
