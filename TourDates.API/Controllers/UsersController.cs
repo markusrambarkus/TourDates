@@ -20,15 +20,15 @@ namespace TourDates.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUsers()
         {
-            // var users = await _datingRepository.GetUsers();
-            return Ok(new string[] { "value1", "value2" });
+            var users = await _datingRepository.GetUsers();
+            return this.Ok(users);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
             var user = await _datingRepository.GetUser(id);
-            return Ok(user);
+            return this.Ok(user);
         }
     }
 }
