@@ -1,3 +1,4 @@
+
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -5,11 +6,11 @@ using TourDates.API.Models;
 
 namespace TourDates.API.Data
 {
-    public class DatingRepository : IDatingRepository
+    public class UserRepository : IUserRepository
     {
         private readonly DataContext _context;
 
-        public DatingRepository(DataContext context)
+        public UserRepository(DataContext context)
         {
             this._context = context;
 

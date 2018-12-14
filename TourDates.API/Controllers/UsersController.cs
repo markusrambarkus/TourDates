@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TourDates.API.Data;
+using TourDates.API.Models;
 
 namespace TourDates.API.Controllers
 {
@@ -11,23 +14,24 @@ namespace TourDates.API.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IDatingRepository _datingRepository;
-        public UsersController(IDatingRepository datingRepository)
+        private readonly IUserRepository _userRepository;
+        public UsersController(IMapper mapper, IUserRepository userRepository)
         {
-            this._datingRepository = datingRepository ?? throw new ArgumentNullException();
+            this._userRepository = userRepository ?? throw new ArgumentNullException();
         }
 
         [HttpGet]
+        [Produces(typeof(IEnumerable<User>))]
         public async Task<IActionResult> GetUsers()
         {
-            var users = await _datingRepository.GetUsers();
+            var users = await _userRepository.GetUsers();
             return this.Ok(users);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
-            var user = await _datingRepository.GetUser(id);
+            var user = await _userRepository.GetUser(id);
             return this.Ok(user);
         }
     }

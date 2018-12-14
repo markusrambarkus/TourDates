@@ -4,7 +4,7 @@ using TourDates.API.Models;
 
 namespace TourDates.API.Data
 {
-    public interface IDatingRepository
+    public interface IUserRepository
     {
          void Add<T>(T entity) where T : class;
          void Delete<T>(T entity) where T : class;
