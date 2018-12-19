@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -43,5 +44,24 @@ namespace TourDates.API.Controllers
 
             return this.Ok(userToReturn);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(int id, UserForUpdateDto userForUpdateDto)
+        {
+            if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return this.Unauthorized();
+            }
+
+            var user = await _userRepository.GetUser(id);
+            _mapper.Map(userForUpdateDto, user);
+
+            if (await _userRepository.SaveAll())
+            {
+                return this.NoContent();
+            }
+
+            throw new Exception($"Updating user {id} failed on save");
+        }        
     }
 }

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { User } from 'src/app/_models/user';
 import { NgxGalleryOptions, NgxGalleryImage, NgxGalleryAnimation } from 'ngx-gallery';
-import { forEach } from '@angular/router/src/utils/collection';
 
 @Component({
   selector: 'app-member-detail',
@@ -31,8 +30,6 @@ export class MemberDetailComponent implements OnInit {
     ];
 
     this.galleryImages = this.getImages();
-
-    ];
   }
 
   getImages() {
