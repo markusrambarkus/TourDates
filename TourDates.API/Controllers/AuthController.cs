@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -18,11 +19,13 @@ namespace TourDates.API.Controllers
     {
         private readonly IAuthRepository _authRepository;
         private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
 
-        public AuthController(IAuthRepository authRepository, IConfiguration configuration)
+        public AuthController(IAuthRepository authRepository, IConfiguration configuration, IMapper mapper)
         {
             this._authRepository = authRepository ?? throw new ArgumentNullException();
             this._configuration = configuration;
+            this._mapper = mapper;
         }
 
         [HttpPost("register")]
@@ -73,8 +76,12 @@ namespace TourDates.API.Controllers
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return this.Ok(new {
-                token = tokenHandler.WriteToken(token)
+            var userToReturn = this._mapper.Map<UserForListDto>(user);
+
+            return this.Ok(new
+            {
+                token = tokenHandler.WriteToken(token),
+                user = userToReturn
             });
         }
     }
